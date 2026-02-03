@@ -1,0 +1,303 @@
+<div class="container">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Trang chủ</a></li>
+                    <li class="breadcrumb-item active">Đăng ký ngân hàng</li>
+                </ol>
+            </nav>
+            <h2 class="fw-bold"><i class="bi bi-bank me-2 text-primary"></i>Đăng ký thông tin ngân hàng</h2>
+            <p class="text-muted">Đăng ký tài khoản ngân hàng để nhận doanh thu từ gian hàng</p>
+        </div>
+    </div>
+
+    <!-- Form -->
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-body p-4">
+                    <form action="/register-rep" method="POST" id="repForm">
+                        <!-- Representative Name -->
+                        <div class="mb-4">
+                            <label for="representativeName" class="form-label fw-semibold">
+                                <i class="bi bi-person me-1"></i>Tên người đại diện <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" 
+                                   class="form-control form-control-lg rounded-3" 
+                                   id="representativeName" 
+                                   name="representativeName"
+                                   value="<%= representative ? representative.representativeName : '' %>"
+                                   placeholder="Nhập tên người đại diện lớp"
+                                   required>
+                        </div>
+
+                        <!-- Bank Accounts Section -->
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <label class="form-label fw-semibold mb-0">
+                                    <i class="bi bi-credit-card me-1"></i>Tài khoản ngân hàng <span class="text-danger">*</span>
+                                </label>
+                                <button type="button" class="btn btn-outline-primary btn-sm rounded-pill" id="addAccount">
+                                    <i class="bi bi-plus-circle me-1"></i>Thêm tài khoản
+                                </button>
+                            </div>
+                            
+                            <div id="accountsContainer">
+                                <% if (representative && representative.accounts && representative.accounts.length > 0) { %>
+                                    <% representative.accounts.forEach((acc, index) => { %>
+                                    <div class="account-card card bg-light border-0 rounded-3 mb-3 p-3">
+                                        <div class="d-flex justify-content-between align-items-start mb-3">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="isMainAccount" value="<%= index %>" <%= acc.isMain ? 'checked' : '' %>>
+                                                <label class="form-check-label fw-semibold">
+                                                    <% if (acc.isMain) { %>
+                                                    <span class="badge bg-success me-1">Chính</span>
+                                                    <% } else { %>
+                                                    <span class="badge bg-secondary me-1">Dự phòng</span>
+                                                    <% } %>
+                                                    Tài khoản <%= index + 1 %>
+                                                </label>
+                                            </div>
+                                            <% if (index > 0) { %>
+                                            <button type="button" class="btn btn-outline-danger btn-sm remove-account">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                            <% } %>
+                                        </div>
+                                        <div class="row g-3">
+                                            <div class="col-12">
+                                                <select class="form-select rounded-3" name="bankNames" required>
+                                                    <option value="">-- Chọn ngân hàng --</option>
+                                                    <option value="Agribank" <%= acc.bankName === 'Agribank' ? 'selected' : '' %>>Agribank - Ngân hàng Nông nghiệp và Phát triển Nông thôn Việt Nam</option>
+                                                    <option value="Vietcombank" <%= acc.bankName === 'Vietcombank' ? 'selected' : '' %>>Vietcombank (VCB) - Ngân hàng TMCP Ngoại thương Việt Nam</option>
+                                                    <option value="VietinBank" <%= acc.bankName === 'VietinBank' ? 'selected' : '' %>>VietinBank (CTG) - Ngân hàng TMCP Công thương Việt Nam</option>
+                                                    <option value="BIDV" <%= acc.bankName === 'BIDV' ? 'selected' : '' %>>BIDV - Ngân hàng TMCP Đầu tư và Phát triển Việt Nam</option>
+                                                    <option value="MBBank" <%= acc.bankName === 'MBBank' ? 'selected' : '' %>>MB (MBBank) - Ngân hàng TMCP Quân đội</option>
+                                                    <option value="Techcombank" <%= acc.bankName === 'Techcombank' ? 'selected' : '' %>>Techcombank - Ngân hàng TMCP Kỹ thương Việt Nam</option>
+                                                    <option value="VPBank" <%= acc.bankName === 'VPBank' ? 'selected' : '' %>>VPBank - Ngân hàng TMCP Việt Nam Thịnh Vượng</option>
+                                                    <option value="ACB" <%= acc.bankName === 'ACB' ? 'selected' : '' %>>ACB - Ngân hàng TMCP Á Châu</option>
+                                                    <option value="Sacombank" <%= acc.bankName === 'Sacombank' ? 'selected' : '' %>>Sacombank - Ngân hàng TMCP Sài Gòn Thương Tín</option>
+                                                    <option value="SHB" <%= acc.bankName === 'SHB' ? 'selected' : '' %>>SHB - Ngân hàng TMCP Sài Gòn - Hà Nội</option>
+                                                    <option value="HDBank" <%= acc.bankName === 'HDBank' ? 'selected' : '' %>>HDBank - Ngân hàng TMCP Phát triển TP.HCM</option>
+                                                    <option value="VIB" <%= acc.bankName === 'VIB' ? 'selected' : '' %>>VIB - Ngân hàng TMCP Quốc tế Việt Nam</option>
+                                                    <option value="TPBank" <%= acc.bankName === 'TPBank' ? 'selected' : '' %>>TPBank - Ngân hàng TMCP Tiên Phong</option>
+                                                    <option value="MSB" <%= acc.bankName === 'MSB' ? 'selected' : '' %>>MSB - Ngân hàng TMCP Hàng Hải Việt Nam</option>
+                                                    <option value="LPBank" <%= acc.bankName === 'LPBank' ? 'selected' : '' %>>LPBank - Ngân hàng TMCP Lộc Phát Việt Nam</option>
+                                                    <option value="OCB" <%= acc.bankName === 'OCB' ? 'selected' : '' %>>OCB - Ngân hàng TMCP Phương Đông</option>
+                                                    <option value="SeABank" <%= acc.bankName === 'SeABank' ? 'selected' : '' %>>SeABank - Ngân hàng TMCP Đông Nam Á</option>
+                                                    <option value="ABBank" <%= acc.bankName === 'ABBank' ? 'selected' : '' %>>ABBank - Ngân hàng TMCP An Bình</option>
+                                                    <option value="Bac A Bank" <%= acc.bankName === 'Bac A Bank' ? 'selected' : '' %>>Bac A Bank - Ngân hàng TMCP Bắc Á</option>
+                                                    <option value="BVBank" <%= acc.bankName === 'BVBank' ? 'selected' : '' %>>BVBank - Ngân hàng TMCP Bản Việt</option>
+                                                    <option value="Nam A Bank" <%= acc.bankName === 'Nam A Bank' ? 'selected' : '' %>>Nam A Bank - Ngân hàng TMCP Nam Á</option>
+                                                    <option value="VietBank" <%= acc.bankName === 'VietBank' ? 'selected' : '' %>>VietBank - Ngân hàng TMCP Việt Nam Thương Tín</option>
+                                                    <option value="KienlongBank" <%= acc.bankName === 'KienlongBank' ? 'selected' : '' %>>KienlongBank - Ngân hàng TMCP Kiên Long</option>
+                                                    <option value="Saigonbank" <%= acc.bankName === 'Saigonbank' ? 'selected' : '' %>>Saigonbank - Ngân hàng TMCP Sài Gòn Công Thương</option>
+                                                    <option value="PGBank" <%= acc.bankName === 'PGBank' ? 'selected' : '' %>>PGBank - Ngân hàng TMCP Thịnh vượng và Phát triển</option>
+                                                    <option value="Eximbank" <%= acc.bankName === 'Eximbank' ? 'selected' : '' %>>Eximbank - Ngân hàng TMCP Xuất Nhập khẩu Việt Nam</option>
+                                                    <option value="VietABank" <%= acc.bankName === 'VietABank' ? 'selected' : '' %>>VietABank - Ngân hàng TMCP Việt Á</option>
+                                                    <option value="NCB" <%= acc.bankName === 'NCB' ? 'selected' : '' %>>NCB - Ngân hàng TMCP Quốc Dân</option>
+                                                    <option value="BaoViet Bank" <%= acc.bankName === 'BaoViet Bank' ? 'selected' : '' %>>BaoViet Bank - Ngân hàng TMCP Bảo Việt</option>
+                                                    <option value="SCB" <%= acc.bankName === 'SCB' ? 'selected' : '' %>>SCB - Ngân hàng TMCP Sài Gòn</option>
+                                                    <option value="Vikki Bank" <%= acc.bankName === 'Vikki Bank' ? 'selected' : '' %>>Vikki Bank</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <input type="text" class="form-control rounded-3" name="accountNumbers" value="<%= acc.accountNumber %>" placeholder="Số tài khoản" required>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <input type="text" class="form-control rounded-3" name="accountHolders" value="<%= acc.accountHolder %>" placeholder="Tên chủ tài khoản" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <% }); %>
+                                <% } else { %>
+                                <!-- Default first account -->
+                                <div class="account-card card bg-light border-0 rounded-3 mb-3 p-3">
+                                    <div class="d-flex justify-content-between align-items-start mb-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="isMainAccount" value="0" checked>
+                                            <label class="form-check-label fw-semibold">
+                                                <span class="badge bg-success me-1">Chính</span>
+                                                Tài khoản 1
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="row g-3">
+                                        <div class="col-12">
+                                            <select class="form-select rounded-3" name="bankNames" required>
+                                                <option value="">-- Chọn ngân hàng --</option>
+                                                <option value="Agribank">Agribank - Ngân hàng Nông nghiệp và Phát triển Nông thôn Việt Nam</option>
+                                                <option value="Vietcombank">Vietcombank (VCB) - Ngân hàng TMCP Ngoại thương Việt Nam</option>
+                                                <option value="VietinBank">VietinBank (CTG) - Ngân hàng TMCP Công thương Việt Nam</option>
+                                                <option value="BIDV">BIDV - Ngân hàng TMCP Đầu tư và Phát triển Việt Nam</option>
+                                                <option value="MBBank">MB (MBBank) - Ngân hàng TMCP Quân đội</option>
+                                                <option value="Techcombank">Techcombank - Ngân hàng TMCP Kỹ thương Việt Nam</option>
+                                                <option value="VPBank">VPBank - Ngân hàng TMCP Việt Nam Thịnh Vượng</option>
+                                                <option value="ACB">ACB - Ngân hàng TMCP Á Châu</option>
+                                                <option value="Sacombank">Sacombank - Ngân hàng TMCP Sài Gòn Thương Tín</option>
+                                                <option value="SHB">SHB - Ngân hàng TMCP Sài Gòn - Hà Nội</option>
+                                                <option value="HDBank">HDBank - Ngân hàng TMCP Phát triển TP.HCM</option>
+                                                <option value="VIB">VIB - Ngân hàng TMCP Quốc tế Việt Nam</option>
+                                                <option value="TPBank">TPBank - Ngân hàng TMCP Tiên Phong</option>
+                                                <option value="MSB">MSB - Ngân hàng TMCP Hàng Hải Việt Nam</option>
+                                                <option value="LPBank">LPBank - Ngân hàng TMCP Lộc Phát Việt Nam</option>
+                                                <option value="OCB">OCB - Ngân hàng TMCP Phương Đông</option>
+                                                <option value="SeABank">SeABank - Ngân hàng TMCP Đông Nam Á</option>
+                                                <option value="ABBank">ABBank - Ngân hàng TMCP An Bình</option>
+                                                <option value="Bac A Bank">Bac A Bank - Ngân hàng TMCP Bắc Á</option>
+                                                <option value="BVBank">BVBank - Ngân hàng TMCP Bản Việt</option>
+                                                <option value="Nam A Bank">Nam A Bank - Ngân hàng TMCP Nam Á</option>
+                                                <option value="VietBank">VietBank - Ngân hàng TMCP Việt Nam Thương Tín</option>
+                                                <option value="KienlongBank">KienlongBank - Ngân hàng TMCP Kiên Long</option>
+                                                <option value="Saigonbank">Saigonbank - Ngân hàng TMCP Sài Gòn Công Thương</option>
+                                                <option value="PGBank">PGBank - Ngân hàng TMCP Thịnh vượng và Phát triển</option>
+                                                <option value="Eximbank">Eximbank - Ngân hàng TMCP Xuất Nhập khẩu Việt Nam</option>
+                                                <option value="VietABank">VietABank - Ngân hàng TMCP Việt Á</option>
+                                                <option value="NCB">NCB - Ngân hàng TMCP Quốc Dân</option>
+                                                <option value="BaoViet Bank">BaoViet Bank - Ngân hàng TMCP Bảo Việt</option>
+                                                <option value="SCB">SCB - Ngân hàng TMCP Sài Gòn</option>
+                                                <option value="Vikki Bank">Vikki Bank</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <input type="text" class="form-control rounded-3" name="accountNumbers" placeholder="Số tài khoản" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <input type="text" class="form-control rounded-3" name="accountHolders" placeholder="Tên chủ tài khoản" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <% } %>
+                            </div>
+                        </div>
+
+                        <!-- Submit -->
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="/" class="btn btn-outline-secondary rounded-3 px-4">
+                                <i class="bi bi-arrow-left me-1"></i>Quay lại
+                            </a>
+                            <button type="submit" class="btn btn-primary rounded-3 px-4">
+                                <i class="bi bi-check-circle me-1"></i>Lưu thông tin
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Instructions -->
+        <div class="col-lg-4 mt-4 mt-lg-0">
+            <div class="card border-0 shadow-sm rounded-4 bg-primary text-white">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-3"><i class="bi bi-info-circle me-2"></i>Hướng dẫn</h5>
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2"><i class="bi bi-check2 me-2"></i>Điền đầy đủ thông tin người đại diện</li>
+                        <li class="mb-2"><i class="bi bi-check2 me-2"></i>Tài khoản <strong>Chính</strong> sẽ được dùng để nhận tiền</li>
+                        <li class="mb-2"><i class="bi bi-check2 me-2"></i>Có thể thêm tài khoản dự phòng</li>
+                        <li class="mb-0"><i class="bi bi-check2 me-2"></i>Kiểm tra kỹ số tài khoản trước khi lưu</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const bankOptions = `
+    <option value="">-- Chọn ngân hàng --</option>
+    <option value="Agribank">Agribank - Ngân hàng Nông nghiệp và Phát triển Nông thôn Việt Nam</option>
+    <option value="Vietcombank">Vietcombank (VCB) - Ngân hàng TMCP Ngoại thương Việt Nam</option>
+    <option value="VietinBank">VietinBank (CTG) - Ngân hàng TMCP Công thương Việt Nam</option>
+    <option value="BIDV">BIDV - Ngân hàng TMCP Đầu tư và Phát triển Việt Nam</option>
+    <option value="MBBank">MB (MBBank) - Ngân hàng TMCP Quân đội</option>
+    <option value="Techcombank">Techcombank - Ngân hàng TMCP Kỹ thương Việt Nam</option>
+    <option value="VPBank">VPBank - Ngân hàng TMCP Việt Nam Thịnh Vượng</option>
+    <option value="ACB">ACB - Ngân hàng TMCP Á Châu</option>
+    <option value="Sacombank">Sacombank - Ngân hàng TMCP Sài Gòn Thương Tín</option>
+    <option value="SHB">SHB - Ngân hàng TMCP Sài Gòn - Hà Nội</option>
+    <option value="HDBank">HDBank - Ngân hàng TMCP Phát triển TP.HCM</option>
+    <option value="VIB">VIB - Ngân hàng TMCP Quốc tế Việt Nam</option>
+    <option value="TPBank">TPBank - Ngân hàng TMCP Tiên Phong</option>
+    <option value="MSB">MSB - Ngân hàng TMCP Hàng Hải Việt Nam</option>
+    <option value="LPBank">LPBank - Ngân hàng TMCP Lộc Phát Việt Nam</option>
+    <option value="OCB">OCB - Ngân hàng TMCP Phương Đông</option>
+    <option value="SeABank">SeABank - Ngân hàng TMCP Đông Nam Á</option>
+    <option value="ABBank">ABBank - Ngân hàng TMCP An Bình</option>
+    <option value="Bac A Bank">Bac A Bank - Ngân hàng TMCP Bắc Á</option>
+    <option value="BVBank">BVBank - Ngân hàng TMCP Bản Việt</option>
+    <option value="Nam A Bank">Nam A Bank - Ngân hàng TMCP Nam Á</option>
+    <option value="VietBank">VietBank - Ngân hàng TMCP Việt Nam Thương Tín</option>
+    <option value="KienlongBank">KienlongBank - Ngân hàng TMCP Kiên Long</option>
+    <option value="Saigonbank">Saigonbank - Ngân hàng TMCP Sài Gòn Công Thương</option>
+    <option value="PGBank">PGBank - Ngân hàng TMCP Thịnh vượng và Phát triển</option>
+    <option value="Eximbank">Eximbank - Ngân hàng TMCP Xuất Nhập khẩu Việt Nam</option>
+    <option value="VietABank">VietABank - Ngân hàng TMCP Việt Á</option>
+    <option value="NCB">NCB - Ngân hàng TMCP Quốc Dân</option>
+    <option value="BaoViet Bank">BaoViet Bank - Ngân hàng TMCP Bảo Việt</option>
+    <option value="SCB">SCB - Ngân hàng TMCP Sài Gòn</option>
+    <option value="Vikki Bank">Vikki Bank</option>
+`;
+
+let accountCount = document.querySelectorAll('.account-card').length;
+
+document.getElementById('addAccount').addEventListener('click', function() {
+    accountCount++;
+    const container = document.getElementById('accountsContainer');
+    const newAccount = document.createElement('div');
+    newAccount.className = 'account-card card bg-light border-0 rounded-3 mb-3 p-3';
+    newAccount.innerHTML = `
+        <div class="d-flex justify-content-between align-items-start mb-3">
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="isMainAccount" value="${accountCount - 1}">
+                <label class="form-check-label fw-semibold">
+                    <span class="badge bg-secondary me-1">Dự phòng</span>
+                    Tài khoản ${accountCount}
+                </label>
+            </div>
+            <button type="button" class="btn btn-outline-danger btn-sm remove-account">
+                <i class="bi bi-trash"></i>
+            </button>
+        </div>
+        <div class="row g-3">
+            <div class="col-12">
+                <select class="form-select rounded-3" name="bankNames" required>
+                    ${bankOptions}
+                </select>
+            </div>
+            <div class="col-md-6">
+                <input type="text" class="form-control rounded-3" name="accountNumbers" placeholder="Số tài khoản" required>
+            </div>
+            <div class="col-md-6">
+                <input type="text" class="form-control rounded-3" name="accountHolders" placeholder="Tên chủ tài khoản" required>
+            </div>
+        </div>
+    `;
+    container.appendChild(newAccount);
+    updateRemoveListeners();
+});
+
+function updateRemoveListeners() {
+    document.querySelectorAll('.remove-account').forEach(btn => {
+        btn.onclick = function() {
+            this.closest('.account-card').remove();
+            renumberAccounts();
+        };
+    });
+}
+
+function renumberAccounts() {
+    const cards = document.querySelectorAll('.account-card');
+    cards.forEach((card, index) => {
+        const radio = card.querySelector('input[type="radio"]');
+        radio.value = index;
+        const label = card.querySelector('.form-check-label');
+        const badge = label.querySelector('.badge');
+        label.innerHTML = `${badge.outerHTML} Tài khoản ${index + 1}`;
+    });
+    accountCount = cards.length;
+}
+
+updateRemoveListeners();
+</script>

@@ -1,0 +1,327 @@
+<div class="container">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Trang chủ</a></li>
+                    <li class="breadcrumb-item active">Đăng ký mở tài khoản ngân hàng</li>
+                </ol>
+            </nav>
+            <h2 class="fw-bold"><i class="bi bi-person-plus me-2 text-primary"></i>Đăng ký mở tài khoản ngân hàng</h2>
+            <p class="text-muted">Thêm thông tin học sinh để mở tài khoản ngân hàng (ảnh CCCD không bắt buộc)</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Form Column -->
+        <div class="col-lg-6 mb-4 mb-lg-0">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-header bg-transparent border-0 py-3">
+                    <h5 class="mb-0"><i class="bi bi-plus-circle me-2"></i>Thêm học sinh mới</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form action="/register-student" method="POST" enctype="multipart/form-data">
+                        <div class="row g-3">
+                            <!-- Full Name -->
+                            <div class="col-12">
+                                <label for="fullName" class="form-label fw-semibold">
+                                    <i class="bi bi-person me-1"></i>Họ và tên <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" 
+                                       class="form-control rounded-3" 
+                                       id="fullName" 
+                                       name="fullName"
+                                       placeholder="Nhập họ và tên đầy đủ"
+                                       required>
+                            </div>
+
+                            <!-- Date of Birth -->
+                            <div class="col-md-6 col-12">
+                                <label for="dob" class="form-label fw-semibold">
+                                    <i class="bi bi-calendar me-1"></i>Ngày sinh <span class="text-danger">*</span>
+                                </label>
+                                <input type="date" 
+                                       class="form-control rounded-3" 
+                                       id="dob" 
+                                       name="dob"
+                                       required>
+                            </div>
+
+                            <!-- Phone -->
+                            <div class="col-md-6 col-12">
+                                <label for="phoneNumber" class="form-label fw-semibold">
+                                    <i class="bi bi-telephone me-1"></i>Số điện thoại <span class="text-danger">*</span>
+                                </label>
+                                <input type="tel" 
+                                       class="form-control rounded-3" 
+                                       id="phoneNumber" 
+                                       name="phoneNumber"
+                                       placeholder="0123456789"
+                                       required>
+                            </div>
+
+                            <!-- CCCD Number -->
+                            <div class="col-12">
+                                <label for="cccdNumber" class="form-label fw-semibold">
+                                    <i class="bi bi-card-text me-1"></i>Số CCCD <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" 
+                                       class="form-control rounded-3" 
+                                       id="cccdNumber" 
+                                       name="cccdNumber"
+                                       placeholder="Số căn cước công dân"
+                                       required>
+                            </div>
+
+                            <!-- CCCD Front Image -->
+                            <div class="col-md-6 col-12">
+                                <label for="cccdFront" class="form-label fw-semibold">
+                                    <i class="bi bi-image me-1"></i>Ảnh CCCD mặt trước
+                                </label>
+                                <input type="file" 
+                                       class="form-control rounded-3" 
+                                       id="cccdFront" 
+                                       name="cccdFront"
+                                       accept="image/*">
+                                <div class="form-text">Không bắt buộc</div>
+                                <div id="frontPreview" class="mt-2 d-none">
+                                    <img src="" alt="Preview" class="img-thumbnail rounded-3" style="max-height: 120px;">
+                                </div>
+                            </div>
+
+                            <!-- CCCD Back Image -->
+                            <div class="col-md-6 col-12">
+                                <label for="cccdBack" class="form-label fw-semibold">
+                                    <i class="bi bi-image me-1"></i>Ảnh CCCD mặt sau
+                                </label>
+                                <input type="file" 
+                                       class="form-control rounded-3" 
+                                       id="cccdBack" 
+                                       name="cccdBack"
+                                       accept="image/*">
+                                <div class="form-text">Không bắt buộc</div>
+                                <div id="backPreview" class="mt-2 d-none">
+                                    <img src="" alt="Preview" class="img-thumbnail rounded-3" style="max-height: 120px;">
+                                </div>
+                            </div>
+
+                            <!-- Submit -->
+                            <div class="col-12">
+                                <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
+                                    <a href="/" class="btn btn-outline-secondary rounded-3 px-4">
+                                        <i class="bi bi-arrow-left me-1"></i>Quay lại
+                                    </a>
+                                    <button type="submit" class="btn btn-primary rounded-3 px-4">
+                                        <i class="bi bi-check-circle me-1"></i>Đăng ký
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Students List Column -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-header bg-transparent border-0 py-3 d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-list-ul me-2"></i>Danh sách đã đăng ký</h5>
+                    <span class="badge bg-primary rounded-pill"><%= students.length %> học sinh</span>
+                </div>
+                <div class="card-body p-0">
+                    <% if (students.length === 0) { %>
+                    <div class="text-center py-5">
+                        <i class="bi bi-inbox text-muted" style="font-size: 3rem;"></i>
+                        <p class="text-muted mt-3">Chưa có học sinh nào được đăng ký</p>
+                    </div>
+                    <% } else { %>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="ps-4">Họ tên</th>
+                                    <th>Số CCCD</th>
+                                    <th class="text-end pe-4">Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% students.forEach(student => { %>
+                                <tr class="cursor-pointer" onclick="showStudentDetail(<%= JSON.stringify(student) %>)" style="cursor: pointer;">
+                                    <td class="ps-4">
+                                        <div class="fw-semibold"><%= student.fullName %></div>
+                                        <small class="text-muted"><%= student.phoneNumber %></small>
+                                    </td>
+                                    <td><code><%= student.cccdNumber %></code></td>
+                                    <td class="text-end pe-4">
+                                        <button type="button" class="btn btn-outline-info btn-sm rounded-pill me-1" onclick="event.stopPropagation(); showStudentDetail(<%= JSON.stringify(student) %>);">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        <form action="/delete-student/<%= student.id %>" method="POST" class="d-inline" onsubmit="event.stopPropagation(); return confirm('Bạn có chắc muốn xóa học sinh này?');">
+                                            <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Student Detail Modal -->
+<div class="modal fade" id="studentDetailModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 rounded-4">
+            <div class="modal-header border-bottom-0 pb-0">
+                <h5 class="modal-title fw-bold"><i class="bi bi-person-badge me-2 text-primary"></i>Thông tin học sinh</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label text-muted small">Họ và tên</label>
+                            <p class="fw-semibold fs-5 mb-0" id="detailFullName">-</p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted small">Lớp</label>
+                            <p class="mb-0"><span class="badge bg-primary rounded-pill" id="detailClass">-</span></p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted small">Ngày sinh</label>
+                            <p class="fw-semibold mb-0" id="detailDob">-</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label text-muted small">Số CCCD</label>
+                            <p class="mb-0"><code class="fs-5" id="detailCccd">-</code></p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted small">Số điện thoại</label>
+                            <p class="fw-semibold mb-0" id="detailPhone">-</p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted small">Ngày đăng ký</label>
+                            <p class="mb-0" id="detailCreatedAt">-</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- CCCD Images -->
+                <hr>
+                <h6 class="fw-bold mb-3"><i class="bi bi-images me-2"></i>Ảnh CCCD</h6>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="card bg-light border-0 rounded-3 h-100">
+                            <div class="card-body text-center p-3">
+                                <p class="text-muted small mb-2">Mặt trước</p>
+                                <div id="detailCccdFront">
+                                    <span class="text-muted">Chưa có ảnh</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card bg-light border-0 rounded-3 h-100">
+                            <div class="card-body text-center p-3">
+                                <p class="text-muted small mb-2">Mặt sau</p>
+                                <div id="detailCccdBack">
+                                    <span class="text-muted">Chưa có ảnh</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-secondary rounded-3" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Full Image Modal -->
+<div class="modal fade" id="fullImageModal" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content border-0 rounded-4">
+            <div class="modal-header border-0">
+                <h5 class="modal-title" id="fullImageTitle">Ảnh CCCD</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center p-4">
+                <img src="" alt="CCCD Full" id="fullImageSrc" class="img-fluid rounded-3" style="max-height: 80vh;">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Image preview on file select
+document.getElementById('cccdFront').addEventListener('change', function(e) {
+    previewImage(this, 'frontPreview');
+});
+document.getElementById('cccdBack').addEventListener('change', function(e) {
+    previewImage(this, 'backPreview');
+});
+
+function previewImage(input, previewId) {
+    const preview = document.getElementById(previewId);
+    const img = preview.querySelector('img');
+    
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            img.src = e.target.result;
+            preview.classList.remove('d-none');
+        };
+        reader.readAsDataURL(input.files[0]);
+    } else {
+        preview.classList.add('d-none');
+    }
+}
+
+// Show student detail modal
+function showStudentDetail(student) {
+    document.getElementById('detailFullName').textContent = student.fullName;
+    document.getElementById('detailClass').textContent = student.className;
+    document.getElementById('detailDob').textContent = new Date(student.dob).toLocaleDateString('vi-VN');
+    document.getElementById('detailCccd').textContent = student.cccdNumber;
+    document.getElementById('detailPhone').textContent = student.phoneNumber;
+    document.getElementById('detailCreatedAt').textContent = new Date(student.createdAt).toLocaleDateString('vi-VN');
+    
+    // CCCD Front
+    const frontDiv = document.getElementById('detailCccdFront');
+    if (student.cccdFront) {
+        frontDiv.innerHTML = `<img src="${student.cccdFront}" class="img-fluid rounded-3 cursor-pointer" style="max-height: 200px; cursor: pointer;" onclick="showFullImage('${student.cccdFront}', 'Mặt trước - ${student.fullName}')">`;
+    } else {
+        frontDiv.innerHTML = '<span class="text-muted"><i class="bi bi-image me-1"></i>Chưa có ảnh</span>';
+    }
+    
+    // CCCD Back
+    const backDiv = document.getElementById('detailCccdBack');
+    if (student.cccdBack) {
+        backDiv.innerHTML = `<img src="${student.cccdBack}" class="img-fluid rounded-3 cursor-pointer" style="max-height: 200px; cursor: pointer;" onclick="showFullImage('${student.cccdBack}', 'Mặt sau - ${student.fullName}')">`;
+    } else {
+        backDiv.innerHTML = '<span class="text-muted"><i class="bi bi-image me-1"></i>Chưa có ảnh</span>';
+    }
+    
+    new bootstrap.Modal(document.getElementById('studentDetailModal')).show();
+}
+
+// Show full image
+function showFullImage(src, title) {
+    document.getElementById('fullImageSrc').src = src;
+    document.getElementById('fullImageTitle').textContent = title;
+    bootstrap.Modal.getInstance(document.getElementById('studentDetailModal')).hide();
+    new bootstrap.Modal(document.getElementById('fullImageModal')).show();
+}
+</script>

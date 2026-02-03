@@ -1,0 +1,367 @@
+<div class="container-fluid px-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center flex-wrap">
+                <div>
+                    <h2 class="fw-bold mb-1"><i class="bi bi-speedometer2 me-2 text-primary"></i>Admin Dashboard</h2>
+                    <p class="text-muted mb-0">Quản lý thông tin Hội Trại Xuân - THPT Võ Văn Kiệt 2026</p>
+                </div>
+                <div class="mt-2 mt-md-0">
+                    <span class="badge bg-primary fs-6 px-3 py-2 rounded-pill">
+                        <i class="bi bi-people me-1"></i><%= classes.length %> lớp
+                    </span>
+                    <span class="badge bg-success fs-6 px-3 py-2 rounded-pill ms-2">
+                        <i class="bi bi-person-check me-1"></i><%= students.length %> học sinh
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabs -->
+    <ul class="nav nav-tabs nav-fill mb-4" id="adminTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active fw-semibold" id="finance-tab" data-bs-toggle="tab" data-bs-target="#finance" type="button">
+                <i class="bi bi-bank me-2"></i>Thông tin tài chính
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link fw-semibold" id="students-tab" data-bs-toggle="tab" data-bs-target="#students" type="button">
+                <i class="bi bi-people me-2"></i>Danh sách học sinh mở TK
+            </button>
+        </li>
+    </ul>
+
+    <!-- Tab Content -->
+    <div class="tab-content" id="adminTabsContent">
+        <!-- Finance Tab -->
+        <div class="tab-pane fade show active" id="finance" role="tabpanel">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-header bg-transparent border-0 py-3">
+                    <div class="row align-items-center">
+                        <div class="col-md-4">
+                            <h5 class="mb-0"><i class="bi bi-table me-2"></i>Bảng thông tin tài chính</h5>
+                        </div>
+                        <div class="col-md-5 mt-2 mt-md-0">
+                            <input type="text" class="form-control rounded-3" id="financeSearch" placeholder="Tìm kiếm lớp, giáo viên...">
+                        </div>
+                        <div class="col-md-3 mt-2 mt-md-0 text-md-end">
+                            <a href="/admin/export/representatives" class="btn btn-success rounded-3">
+                                <i class="bi bi-file-earmark-excel me-1"></i>Xuất Excel
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0" id="financeTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="ps-4">Lớp</th>
+                                    <th>GVCN</th>
+                                    <th>Đại diện</th>
+                                    <th>Tài khoản NH</th>
+                                    <th class="text-center">Trạng thái</th>
+                                    <th class="text-center">Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% classes.forEach(cls => { %>
+                                <% const rep = repMap[cls.username]; %>
+                                <tr>
+                                    <td class="ps-4 fw-semibold"><%= cls.username %></td>
+                                    <td><%= cls.teacherName %></td>
+                                    <td>
+                                        <% if (rep) { %>
+                                        <%= rep.representativeName %>
+                                        <% } else { %>
+                                        <span class="text-muted">-</span>
+                                        <% } %>
+                                    </td>
+                                    <td>
+                                        <% if (rep && rep.accounts && rep.accounts.length > 0) { %>
+                                        <% const mainAcc = rep.accounts.find(a => a.isMain) || rep.accounts[0]; %>
+                                        <div>
+                                            <span class="badge bg-info me-1"><%= mainAcc.bankName %></span>
+                                            <span class="text-muted small"><%= mainAcc.accountNumber %></span>
+                                        </div>
+                                        <small class="text-muted">CTK: <%= mainAcc.accountHolder %></small>
+                                        <% if (rep.accounts.length > 1) { %>
+                                        <br><small class="text-primary">+ <%= rep.accounts.length - 1 %> tài khoản dự phòng</small>
+                                        <% } %>
+                                        <% } else { %>
+                                        <span class="text-muted">-</span>
+                                        <% } %>
+                                    </td>
+                                    <td class="text-center">
+                                        <% if (rep) { %>
+                                        <span class="badge bg-success rounded-pill"><i class="bi bi-check-circle me-1"></i>Đã đăng ký</span>
+                                        <% } else { %>
+                                        <span class="badge bg-warning text-dark rounded-pill"><i class="bi bi-clock me-1"></i>Chưa đăng ký</span>
+                                        <% } %>
+                                    </td>
+                                    <td class="text-center">
+                                        <% if (rep) { %>
+                                        <form action="/admin/delete-rep/<%= cls.username %>" method="POST" class="d-inline" onsubmit="return confirm('Bạn có chắc muốn xóa thông tin tài chính của lớp <%= cls.username %>? Hành động này không thể hoàn tác!');">
+                                            <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill" title="Xóa thông tin tài chính">
+                                                <i class="bi bi-trash"></i> Xóa
+                                            </button>
+                                        </form>
+                                        <% } else { %>
+                                        <span class="text-muted">-</span>
+                                        <% } %>
+                                    </td>
+                                </tr>
+                                <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Students Tab -->
+        <div class="tab-pane fade" id="students" role="tabpanel">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-header bg-transparent border-0 py-3">
+                    <div class="row align-items-center">
+                        <div class="col-md-4">
+                            <h5 class="mb-0"><i class="bi bi-people me-2"></i>Danh sách học sinh đăng ký mở TK</h5>
+                        </div>
+                        <div class="col-md-5 mt-2 mt-md-0">
+                            <div class="row g-2">
+                                <div class="col-7">
+                                    <input type="text" class="form-control rounded-3" id="studentSearch" placeholder="Tìm kiếm tên, CCCD...">
+                                </div>
+                                <div class="col-5">
+                                    <select class="form-select rounded-3" id="classFilter">
+                                        <option value="">Tất cả lớp</option>
+                                        <% const uniqueClasses = [...new Set(students.map(s => s.className))].sort(); %>
+                                        <% uniqueClasses.forEach(cls => { %>
+                                        <option value="<%= cls %>"><%= cls %></option>
+                                        <% }); %>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mt-2 mt-md-0 text-md-end">
+                            <a href="/admin/export/students" class="btn btn-success rounded-3">
+                                <i class="bi bi-file-earmark-excel me-1"></i>Xuất Excel
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <% if (students.length === 0) { %>
+                    <div class="text-center py-5">
+                        <i class="bi bi-inbox text-muted" style="font-size: 3rem;"></i>
+                        <p class="text-muted mt-3">Chưa có học sinh nào được đăng ký</p>
+                    </div>
+                    <% } else { %>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0" id="studentsTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="ps-4">Họ và tên</th>
+                                    <th>Lớp</th>
+                                    <th>Ngày sinh</th>
+                                    <th>Số CCCD</th>
+                                    <th>SĐT</th>
+                                    <th>Ảnh CCCD</th>
+                                    <th class="text-center">Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% students.forEach(student => { %>
+                                <tr data-class="<%= student.className %>" style="cursor: pointer;" onclick="showStudentDetail(<%= JSON.stringify(student) %>)">
+                                    <td class="ps-4 fw-semibold"><%= student.fullName %></td>
+                                    <td><span class="badge bg-primary rounded-pill"><%= student.className %></span></td>
+                                    <td><%= new Date(student.dob).toLocaleDateString('vi-VN') %></td>
+                                    <td><code><%= student.cccdNumber %></code></td>
+                                    <td><%= student.phoneNumber %></td>
+                                    <td>
+                                        <% if (student.cccdFront || student.cccdBack) { %>
+                                        <span class="badge bg-success rounded-pill">
+                                            <i class="bi bi-check-circle me-1"></i>
+                                            <%= (student.cccdFront ? 1 : 0) + (student.cccdBack ? 1 : 0) %> ảnh
+                                        </span>
+                                        <% } else { %>
+                                        <span class="badge bg-secondary rounded-pill">Không có</span>
+                                        <% } %>
+                                    </td>
+                                    <td class="text-center">
+                                        <button type="button" class="btn btn-outline-info btn-sm rounded-pill me-1" onclick="event.stopPropagation(); showStudentDetail(<%= JSON.stringify(student) %>);" title="Xem chi tiết">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        <form action="/admin/delete-student/<%= student.id %>" method="POST" class="d-inline" onsubmit="event.stopPropagation(); return confirm('Bạn có chắc muốn xóa học sinh <%= student.fullName %>?');">
+                                            <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill" title="Xóa học sinh">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Student Detail Modal -->
+<div class="modal fade" id="studentDetailModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 rounded-4">
+            <div class="modal-header border-bottom-0 pb-0">
+                <h5 class="modal-title fw-bold"><i class="bi bi-person-badge me-2 text-primary"></i>Thông tin học sinh</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label text-muted small">Họ và tên</label>
+                            <p class="fw-semibold fs-5 mb-0" id="detailFullName">-</p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted small">Lớp</label>
+                            <p class="mb-0"><span class="badge bg-primary rounded-pill" id="detailClass">-</span></p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted small">Ngày sinh</label>
+                            <p class="fw-semibold mb-0" id="detailDob">-</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label text-muted small">Số CCCD</label>
+                            <p class="mb-0"><code class="fs-5" id="detailCccd">-</code></p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted small">Số điện thoại</label>
+                            <p class="fw-semibold mb-0" id="detailPhone">-</p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted small">Ngày đăng ký</label>
+                            <p class="mb-0" id="detailCreatedAt">-</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- CCCD Images -->
+                <hr>
+                <h6 class="fw-bold mb-3"><i class="bi bi-images me-2"></i>Ảnh CCCD</h6>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="card bg-light border-0 rounded-3 h-100">
+                            <div class="card-body text-center p-3">
+                                <p class="text-muted small mb-2">Mặt trước</p>
+                                <div id="detailCccdFront">
+                                    <span class="text-muted">Chưa có ảnh</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card bg-light border-0 rounded-3 h-100">
+                            <div class="card-body text-center p-3">
+                                <p class="text-muted small mb-2">Mặt sau</p>
+                                <div id="detailCccdBack">
+                                    <span class="text-muted">Chưa có ảnh</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-secondary rounded-3" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Full Image Modal -->
+<div class="modal fade" id="fullImageModal" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content border-0 rounded-4">
+            <div class="modal-header border-0">
+                <h5 class="modal-title" id="fullImageTitle">Ảnh CCCD</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center p-4">
+                <img src="" alt="CCCD Full" id="fullImageSrc" class="img-fluid rounded-3" style="max-height: 80vh;">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Finance table search
+document.getElementById('financeSearch').addEventListener('input', function() {
+    const query = this.value.toLowerCase();
+    const rows = document.querySelectorAll('#financeTable tbody tr');
+    rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(query) ? '' : 'none';
+    });
+});
+
+// Students table search
+document.getElementById('studentSearch').addEventListener('input', filterStudents);
+document.getElementById('classFilter').addEventListener('change', filterStudents);
+
+function filterStudents() {
+    const query = document.getElementById('studentSearch').value.toLowerCase();
+    const classValue = document.getElementById('classFilter').value;
+    const rows = document.querySelectorAll('#studentsTable tbody tr');
+    
+    rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        const rowClass = row.dataset.class;
+        const matchesQuery = text.includes(query);
+        const matchesClass = !classValue || rowClass === classValue;
+        row.style.display = (matchesQuery && matchesClass) ? '' : 'none';
+    });
+}
+
+// Show student detail modal
+function showStudentDetail(student) {
+    document.getElementById('detailFullName').textContent = student.fullName;
+    document.getElementById('detailClass').textContent = student.className;
+    document.getElementById('detailDob').textContent = new Date(student.dob).toLocaleDateString('vi-VN');
+    document.getElementById('detailCccd').textContent = student.cccdNumber;
+    document.getElementById('detailPhone').textContent = student.phoneNumber;
+    document.getElementById('detailCreatedAt').textContent = new Date(student.createdAt).toLocaleDateString('vi-VN');
+    
+    // CCCD Front
+    const frontDiv = document.getElementById('detailCccdFront');
+    if (student.cccdFront) {
+        frontDiv.innerHTML = `<img src="${student.cccdFront}" class="img-fluid rounded-3" style="max-height: 200px; cursor: pointer;" onclick="showFullImage('${student.cccdFront}', 'Mặt trước - ${student.fullName}')">`;
+    } else {
+        frontDiv.innerHTML = '<span class="text-muted"><i class="bi bi-image me-1"></i>Chưa có ảnh</span>';
+    }
+    
+    // CCCD Back
+    const backDiv = document.getElementById('detailCccdBack');
+    if (student.cccdBack) {
+        backDiv.innerHTML = `<img src="${student.cccdBack}" class="img-fluid rounded-3" style="max-height: 200px; cursor: pointer;" onclick="showFullImage('${student.cccdBack}', 'Mặt sau - ${student.fullName}')">`;
+    } else {
+        backDiv.innerHTML = '<span class="text-muted"><i class="bi bi-image me-1"></i>Chưa có ảnh</span>';
+    }
+    
+    new bootstrap.Modal(document.getElementById('studentDetailModal')).show();
+}
+
+// Show full image
+function showFullImage(src, title) {
+    document.getElementById('fullImageSrc').src = src;
+    document.getElementById('fullImageTitle').textContent = title;
+    bootstrap.Modal.getInstance(document.getElementById('studentDetailModal')).hide();
+    new bootstrap.Modal(document.getElementById('fullImageModal')).show();
+}
+</script>

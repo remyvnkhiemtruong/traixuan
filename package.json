@@ -1,0 +1,30 @@
+{
+  "name": "vvk-spring-fair-manager",
+  "version": "1.0.0",
+  "description": "Web application for managing VVK high school spring fair",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "seed": "node seed.js"
+  },
+  "keywords": [
+    "spring-fair",
+    "school",
+    "management"
+  ],
+  "author": "VVK Team",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.3.1",
+    "ejs": "^3.1.9",
+    "exceljs": "^4.4.0",
+    "express": "^4.18.2",
+    "express-ejs-layouts": "^2.5.1",
+    "express-session": "^1.17.3",
+    "multer": "^1.4.5-lts.1",
+    "pg": "^8.18.0",
+    "sequelize": "^6.37.7"
+  }
+}
