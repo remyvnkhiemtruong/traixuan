@@ -708,6 +708,50 @@ app.get('/admin/export/students', checkAdmin, async (req, res) => {
     }
 });
 
+// Admin - Class Detail View
+app.get('/admin/class/:className', checkAdmin, async (req, res) => {
+    try {
+        const { className } = req.params;
+        const upperClassName = className.toUpperCase();
+
+        const classAccount = await ClassAccount.findOne({
+            where: { username: upperClassName }
+        });
+
+        if (!classAccount) {
+            req.session.error = 'Không tìm thấy lớp học';
+            return res.redirect('/admin');
+        }
+
+        const representative = await Representative.findOne({
+            where: { className: upperClassName },
+            include: [{ model: BankAccount, as: 'accounts' }]
+        });
+
+        const students = await Student.findAll({
+            where: { className: upperClassName },
+            order: [['fullName', 'ASC']]
+        });
+
+        const foodItems = await FoodItem.findAll({
+            where: { className: upperClassName },
+            order: [['createdAt', 'DESC']]
+        });
+
+        res.render('admin-class-detail', {
+            title: `Chi tiết lớp ${upperClassName} - THPT Võ Văn Kiệt`,
+            classAccount,
+            representative,
+            students,
+            foodItems
+        });
+    } catch (error) {
+        console.error('Admin class detail error:', error);
+        req.session.error = 'Đã có lỗi xảy ra';
+        res.redirect('/admin');
+    }
+});
+
 // ===================== ERROR HANDLING =====================
 
 // 404 handler

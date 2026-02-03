@@ -70,7 +70,11 @@
                                 <% classes.forEach(cls => { %>
                                 <% const rep = repMap[cls.username]; %>
                                 <tr>
-                                    <td class="ps-4 fw-semibold"><%= cls.username %></td>
+                                    <td class="ps-4 fw-semibold">
+                                        <a href="/admin/class/<%= cls.username %>" class="text-decoration-none fw-bold" title="Xem chi tiết lớp <%= cls.username %>">
+                                            <%= cls.username %> <i class="bi bi-box-arrow-up-right ms-1 small text-muted"></i>
+                                        </a>
+                                    </td>
                                     <td><%= cls.teacherName %></td>
                                     <td>
                                         <% if (rep) { %>
