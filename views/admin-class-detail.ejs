@@ -54,11 +54,18 @@
         <!-- 1. Bank Information Tab -->
         <div class="tab-pane fade show active" id="bank" role="tabpanel">
             <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-header bg-transparent border-0 py-3 d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 text-primary fw-bold"><i class="bi bi-bank me-2"></i>Thông tin tài chính</h5>
+                    <% if (representative) { %>
+                    <a href="/admin/export/class/<%= classAccount.username %>/finance" class="btn btn-success btn-sm rounded-3">
+                        <i class="bi bi-file-earmark-excel me-1"></i>Xuất Excel
+                    </a>
+                    <% } %>
+                </div>
                 <div class="card-body p-4">
                     <% if (representative) { %>
                         <div class="row mb-4">
                             <div class="col-md-6">
-                                <h5 class="fw-bold text-primary mb-3">Thông tin đại diện</h5>
                                 <div class="mb-3">
                                     <label class="text-muted small">Tên đại diện</label>
                                     <p class="fw-semibold fs-5"><%= representative.representativeName %></p>
@@ -66,7 +73,7 @@
                             </div>
                         </div>
                         
-                        <h5 class="fw-bold text-primary mb-3">Danh sách tài khoản ngân hàng</h5>
+                        <h6 class="fw-bold mb-3">Danh sách tài khoản</h6>
                         <% if (representative.accounts && representative.accounts.length > 0) { %>
                             <div class="table-responsive">
                                 <table class="table table-hover align-middle border rounded-3">
@@ -120,6 +127,14 @@
         <!-- 2. Students Tab -->
         <div class="tab-pane fade" id="students" role="tabpanel">
             <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-header bg-transparent border-0 py-3 d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 text-primary fw-bold"><i class="bi bi-people me-2"></i>Danh sách học sinh</h5>
+                    <% if (students.length > 0) { %>
+                    <a href="/admin/export/class/<%= classAccount.username %>/students" class="btn btn-success btn-sm rounded-3">
+                        <i class="bi bi-file-earmark-excel me-1"></i>Xuất Excel
+                    </a>
+                    <% } %>
+                </div>
                 <div class="card-body p-0">
                     <% if (students.length === 0) { %>
                         <div class="text-center py-5">
@@ -179,6 +194,14 @@
         <!-- 3. Food Menu Tab -->
         <div class="tab-pane fade" id="food" role="tabpanel">
             <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-header bg-transparent border-0 py-3 d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 text-primary fw-bold"><i class="bi bi-egg-fried me-2"></i>Danh sách món ăn</h5>
+                    <% if (foodItems.length > 0) { %>
+                    <a href="/admin/export/class/<%= classAccount.username %>/food" class="btn btn-success btn-sm rounded-3">
+                        <i class="bi bi-file-earmark-excel me-1"></i>Xuất Excel
+                    </a>
+                    <% } %>
+                </div>
                 <div class="card-body p-0">
                     <% if (foodItems.length === 0) { %>
                         <div class="text-center py-5">
@@ -211,7 +234,7 @@
                                             <% } %>
                                         </td>
                                         <td class="text-center">
-                                            <form action="/delete-food/<%= item.id %>" method="POST" class="d-inline" onsubmit="return confirm('Bạn có chắc muốn xóa món <%= item.name %>?');">
+                                            <form action="/admin/delete-food/<%= item.id %>" method="POST" class="d-inline" onsubmit="return confirm('Bạn có chắc muốn xóa món <%= item.name %>?');">
                                                 <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill" title="Xóa món ăn">
                                                     <i class="bi bi-trash"></i>
                                                 </button>

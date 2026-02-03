@@ -752,6 +752,152 @@ app.get('/admin/class/:className', checkAdmin, async (req, res) => {
     }
 });
 
+// Admin - Delete Food Item
+app.post('/admin/delete-food/:id', checkAdmin, async (req, res) => {
+    try {
+        const foodItem = await FoodItem.findByPk(req.params.id);
+
+        if (!foodItem) {
+            req.session.error = 'Không tìm thấy món ăn';
+            return res.redirect('/admin');
+        }
+
+        const className = foodItem.className;
+        await foodItem.destroy();
+        
+        req.session.success = 'Đã xóa món ăn thành công';
+        // Check referer to decide where to redirect
+        const referer = req.get('Referer');
+        if (referer && referer.includes('/admin/class/')) {
+            res.redirect(`/admin/class/${className}`);
+        } else {
+            res.redirect('/admin');
+        }
+    } catch (error) {
+        console.error('Admin delete food error:', error);
+        req.session.error = 'Đã có lỗi xảy ra';
+        res.redirect('/admin');
+    }
+});
+
+// Admin - Export Class Data (Generic)
+app.get('/admin/export/class/:className/:type', checkAdmin, async (req, res) => {
+    try {
+        const { className, type } = req.params;
+        const upperClassName = className.toUpperCase();
+        
+        const workbook = new ExcelJS.Workbook();
+        workbook.creator = 'THPT Võ Văn Kiệt';
+        workbook.created = new Date();
+        
+        if (type === 'students') {
+            const students = await Student.findAll({
+                where: { className: upperClassName },
+                order: [['fullName', 'ASC']]
+            });
+            
+            const worksheet = workbook.addWorksheet(`Học sinh lớp ${upperClassName}`);
+            worksheet.columns = [
+                { header: 'STT', key: 'stt', width: 6 },
+                { header: 'Họ và tên', key: 'fullName', width: 25 },
+                { header: 'Ngày sinh', key: 'dob', width: 15 },
+                { header: 'Số CCCD', key: 'cccdNumber', width: 20 },
+                { header: 'Số điện thoại', key: 'phoneNumber', width: 15 },
+                { header: 'Trạng thái ảnh', key: 'images', width: 20 }
+            ];
+            
+            worksheet.getRow(1).font = { bold: true };
+            
+            students.forEach((student, index) => {
+                worksheet.addRow({
+                    stt: index + 1,
+                    fullName: student.fullName,
+                    dob: new Date(student.dob).toLocaleDateString('vi-VN'),
+                    cccdNumber: student.cccdNumber,
+                    phoneNumber: student.phoneNumber,
+                    images: (student.cccdFront || student.cccdBack) ? 
+                           `${(student.cccdFront ? 1 : 0) + (student.cccdBack ? 1 : 0)} ảnh` : 'Chưa có'
+                });
+            });
+            
+            res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            res.setHeader('Content-Disposition', `attachment; filename=DS_HocSinh_${upperClassName}.xlsx`);
+            
+        } else if (type === 'food') {
+            const foodItems = await FoodItem.findAll({
+                where: { className: upperClassName },
+                order: [['createdAt', 'DESC']]
+            });
+            
+            const worksheet = workbook.addWorksheet(`Menu lớp ${upperClassName}`);
+            worksheet.columns = [
+                { header: 'STT', key: 'stt', width: 6 },
+                { header: 'Tên món ăn', key: 'name', width: 25 },
+                { header: 'Giá bán', key: 'price', width: 15 },
+                { header: 'Mô tả', key: 'description', width: 35 }
+            ];
+            
+            worksheet.getRow(1).font = { bold: true };
+            
+            foodItems.forEach((item, index) => {
+                worksheet.addRow({
+                    stt: index + 1,
+                    name: item.name,
+                    price: item.price,
+                    description: item.description || ''
+                });
+            });
+            
+            res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            res.setHeader('Content-Disposition', `attachment; filename=Menu_${upperClassName}.xlsx`);
+
+        } else if (type === 'finance') {
+             // Re-using logic or simplifying for single class finance (usually just one rep but good to contain)
+            const representative = await Representative.findOne({
+                where: { className: upperClassName },
+                include: [{ model: BankAccount, as: 'accounts' }]
+            });
+            
+            const worksheet = workbook.addWorksheet(`Tài chính lớp ${upperClassName}`);
+             worksheet.columns = [
+                { header: 'Thông tin', key: 'label', width: 20 },
+                { header: 'Giá trị', key: 'value', width: 30 },
+                { header: 'Chi tiết', key: 'detail', width: 30 }
+            ];
+            
+            worksheet.getRow(1).font = { bold: true };
+            
+            if (representative) {
+                worksheet.addRow({ label: 'Đại diện', value: representative.representativeName });
+                if (representative.accounts) {
+                    representative.accounts.forEach((acc, idx) => {
+                         worksheet.addRow({ 
+                            label: `Tài khoản ${idx + 1} (${acc.isMain ? 'Chính' : 'Phụ'})`, 
+                            value: `${acc.bankName} - ${acc.accountNumber}`,
+                            detail: `CTK: ${acc.accountHolder}`
+                         });
+                    });
+                }
+            } else {
+                 worksheet.addRow({ label: 'Trạng thái', value: 'Chưa đăng ký' });
+            }
+             res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            res.setHeader('Content-Disposition', `attachment; filename=TaiChinh_${upperClassName}.xlsx`);
+        } else {
+             req.session.error = 'Loại dữ liệu không hợp lệ';
+            return res.redirect(`/admin/class/${upperClassName}`);
+        }
+
+        await workbook.xlsx.write(res);
+        res.end();
+
+    } catch (error) {
+        console.error('Export class data error:', error);
+        req.session.error = 'Đã có lỗi xảy ra khi xuất dữ liệu';
+        res.redirect('/admin');
+    }
+});
+
 // ===================== ERROR HANDLING =====================
 
 // 404 handler
